@@ -188,6 +188,11 @@ yasu flarum:flarum cat > /opt/flarum/config.php <<EOL
     'api' => '${FLARUM_API_PATH}',
     'admin' => '${FLARUM_ADMIN_PATH}',
   ),
+  'headers' => 
+  array (
+    'poweredByHeader' => true,
+    'referrerPolicy' => 'same-origin',
+  ),
 );
 EOL
 
