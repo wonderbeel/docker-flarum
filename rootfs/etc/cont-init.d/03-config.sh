@@ -196,14 +196,23 @@ yasu flarum:flarum cat > /opt/flarum/config.php <<EOL
 );
 EOL
 
-if [ -s "/data/extensions/list" ]; then
-  while read extension; do
-    test -z "${extension}" && continue
-    extensions="${extensions}${extension} "
-  done < /data/extensions/list
-  echo "Installing additional extensions..."
-  COMPOSER_CACHE_DIR="/data/extensions/.cache" yasu flarum:flarum composer require --working-dir /opt/flarum ${extensions}
+if ! [ -s "/data/extensions/list" ]; then
+  echo "No extensions file available, creating it with the websocket extension..."
+  mkdir -p /data/extensions
+  echo "kyrne/websocket:*" > /data/extensions/list
 fi
 
+while read extension; do
+  test -z "${extension}" && continue
+  extensions="${extensions}${extension} "
+done < /data/extensions/list
+echo "Installing additional extensions..."
+COMPOSER_CACHE_DIR="/data/extensions/.cache" yasu flarum:flarum composer require --working-dir /opt/flarum ${extensions} -W
 yasu flarum:flarum php flarum migrate
 yasu flarum:flarum php flarum cache:clear
+
+
+echo "Preparing supervisor to run the websocket..."
+cp /tpls/etc/supervisord.conf /etc/supervisord.conf
+echo "Starting supervisor daemons..."
+supervisord -c /etc/supervisord.conf

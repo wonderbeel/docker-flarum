@@ -42,6 +42,7 @@ RUN apk --update --no-cache add \
     shadow \
     tar \
     tzdata \
+    supervisor \
   && rm -rf /tmp/* /var/cache/apk/* /var/www/*
 
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS="2"\
