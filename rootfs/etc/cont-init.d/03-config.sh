@@ -49,6 +49,8 @@ FLARUM_DEBUG=${FLARUM_DEBUG:-false}
 FLARUM_FORUM_TITLE="${FLARUM_FORUM_TITLE:-Flarum Dockerized}"
 FLARUM_API_PATH="${FLARUM_API_PATH:-api}"
 FLARUM_ADMIN_PATH="${FLARUM_ADMIN_PATH:-admin}"
+FLARUM_POWEREDBY_HEADER="${FLARUM_POWEREDBY_HEADER:-true}"
+FLARUM_REFERRER_POLICY="${FLARUM_REFERRER_POLICY:-same-origin}"
 
 #DB_HOST=${DB_HOST:-localhost}
 DB_PORT=${DB_PORT:-3306}
@@ -68,16 +70,16 @@ echo "Setting PHP-FPM configuration..."
 sed -e "s/@MEMORY_LIMIT@/$MEMORY_LIMIT/g" \
   -e "s/@UPLOAD_MAX_SIZE@/$UPLOAD_MAX_SIZE/g" \
   -e "s/@CLEAR_ENV@/$CLEAR_ENV/g" \
-  /tpls/etc/php7/php-fpm.d/www.conf > /etc/php7/php-fpm.d/www.conf
+  /tpls/etc/php8/php-fpm.d/www.conf > /etc/php8/php-fpm.d/www.conf
 
 echo "Setting PHP INI configuration..."
-sed -i "s|memory_limit.*|memory_limit = ${MEMORY_LIMIT}|g" /etc/php7/php.ini
-sed -i "s|;date\.timezone.*|date\.timezone = ${TZ}|g" /etc/php7/php.ini
+sed -i "s|memory_limit.*|memory_limit = ${MEMORY_LIMIT}|g" /etc/php8/php.ini
+sed -i "s|;date\.timezone.*|date\.timezone = ${TZ}|g" /etc/php8/php.ini
 
 # OpCache
 echo "Setting OpCache configuration..."
 sed -e "s/@OPCACHE_MEM_SIZE@/$OPCACHE_MEM_SIZE/g" \
-  /tpls/etc/php7/conf.d/opcache.ini > /etc/php7/conf.d/opcache.ini
+  /tpls/etc/php8/conf.d/opcache.ini > /etc/php8/conf.d/opcache.ini
 
 # Nginx
 echo "Setting Nginx configuration..."
@@ -188,10 +190,10 @@ yasu flarum:flarum cat > /opt/flarum/config.php <<EOL
     'api' => '${FLARUM_API_PATH}',
     'admin' => '${FLARUM_ADMIN_PATH}',
   ),
-  'headers' => 
+  'headers' =>
   array (
-    'poweredByHeader' => true,
-    'referrerPolicy' => 'same-origin',
+    'poweredByHeader' => ${FLARUM_POWEREDBY_HEADER},
+    'referrerPolicy' => '${FLARUM_REFERRER_POLICY}',
   ),
 );
 EOL
